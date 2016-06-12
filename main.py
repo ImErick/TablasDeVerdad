@@ -4,7 +4,7 @@ from aenum import Enum
 import sys
 
 
-class Type(Enum):  # This could also be done with individual classes
+class Type(Enum):
     """implementando Enum"""
     leftparentheses = 0
     rightparentheses = 1
@@ -16,7 +16,7 @@ OPERADORES = {  # operando disponibles
     "+": "disyuncion",
     "&": "conjuncion",
     ">": "implicacion",
-    "-": "negacion",
+    "!": "negacion",
 }
 
 
