@@ -4,15 +4,20 @@ from aenum import Enum
 import sys
 
 
-class Type(Enum):
-    """enum con todas las operciones"""
+class Type(Enum):  # This could also be done with individual classes
+    """implementando Enum"""
     leftparentheses = 0
     rightparentheses = 1
     operator = 2
     empty = 3
     operand = 4
 
-OPERATORS = {"+": "disyuncion", ">": "implicacion", "v": "conjuncion", "!": "negacion", }
+OPERADORES = {  # operando disponibles
+    "+": "disyuncion",
+    "&": "conjuncion",
+    ">": "implicacion",
+    "-": "negacion",
+}
 
 
 def negacion(p):
@@ -31,7 +36,7 @@ def disyuncion(p, q):
 
 
 def condicional(p, q):
-    """condicional se utiliza con simbolo >"""
+    """condicional se utiliza con simbolo >: ->"""
     if (p == 1 and q == 0):
         return 0
     else:
@@ -43,20 +48,20 @@ def hazTablaDeVerdad():
     pass
 
 
-def textOperator(string):
+def operadorATexto(string):
     """validando"""
-    if string not in OPERATORS:
-        sys.exit("Unknown operator: " + string)
-    return OPERATORS[string]
+    if string not in OPERADORES:
+        sys.exit("Operador desconocido: " + string)
+    return OPERADORES[string]
 
 
-def typeof(string):
+def tipoDeDato(string):
     """tipo de dato"""
     if string == '(':
         return Type.leftparentheses
     elif string == ')':
         return Type.rightparentheses
-    elif string in OPERATORS:
+    elif string in OPERADORES:
         return Type.operator
     elif string == ' ':
         return Type.empty
@@ -69,12 +74,12 @@ def deInfijaAPrefija(expresion):
     stack = []
     while expresion:
         token = expresion.pop()
-        category = typeof(token)
+        category = tipoDeDato(token)
 
         if category == Type.operand:
             stack.append(token)
         elif category == Type.operator:
-            stack.append((textOperator(token), stack.pop(), deInfijaAPrefija(expresion)))
+            stack.append((operadorATexto(token), stack.pop(), deInfijaAPrefija(expresion)))
         elif category == Type.leftparentheses:
             stack.append(deInfijaAPrefija(expresion))
         elif category == Type.rightparentheses:
