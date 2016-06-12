@@ -35,7 +35,7 @@ def disyuncion(p, q):
     return (p or q)
 
 
-def condicional(p, q):
+def implicacion(p, q):
     """condicional se utiliza con simbolo >: ->"""
     if (p == 1 and q == 0):
         return 0
@@ -89,15 +89,25 @@ def deInfijaAPrefija(expresion):
     return stack.pop()
 
 
-def procesaPrefija(tupla):
+def procesaPrefija(lista):
     """recibe la tupla en infija, de manera recursiva la recorre y procesa"""
-    for token in tupla:
-        if isinstance(token, tuple):
-            procesaPrefija(token)
+    print lista
+    for token in lista:
+        if isinstance(token, list) or isinstance(token, tuple):
+            procesaPrefija(list(token))
         else:
             if token == "disyuncion":
-                pass
-
+                for lista[1] in range(2):
+                    for lista[2] in range(2):
+                        print bool(disyuncion(lista[1], lista[2]))
+            elif token == "conjuncion":
+                for lista[1] in range(2):
+                    for lista[2] in range(2):
+                        print bool(conjuncion(lista[1], lista[2]))
+            elif token == "implicacion":
+                for lista[1] in range(2):
+                    for lista[2] in range(2):
+                        print bool(implicacion(lista[1], lista[2]))
 
 
 def main():
@@ -111,8 +121,7 @@ def main():
     parentesis.parseString(entrada)  # analizando ando
     # devuelve la entrada en forma prefija
     prefija = deInfijaAPrefija(list(entrada[::-1]))
-    print prefija
-    procesaPrefija(prefija)
+    procesaPrefija(list(prefija))
 
 
 main()
