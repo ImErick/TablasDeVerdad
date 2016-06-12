@@ -6,6 +6,7 @@ import sys
 
 class Type(Enum):
     """implementando Enum"""
+
     leftparentheses = 0
     rightparentheses = 1
     operator = 2
@@ -43,9 +44,14 @@ def implicacion(p, q):
         return 1
 
 
-def hazTablaDeVerdad():
-    """aqui voy a tratar de hacer la tabla de verdad"""
-    pass
+def tipoDeTablaDeVerdad(booleano):
+    """define que tipo de proposicion logica es de acuerdo al resultado"""
+    if all(item is True for item in booleano):
+        print "es tautologia"
+    elif all(item is False for item in booleano):
+        print "es contradiccion"
+    else:
+        print "es contingencia"
 
 
 def operadorATexto(string):
@@ -79,7 +85,9 @@ def deInfijaAPrefija(expresion):
         if category == Type.operand:
             stack.append(token)
         elif category == Type.operator:
-            stack.append((operadorATexto(token), stack.pop(), deInfijaAPrefija(expresion)))
+            stack.append(
+                (operadorATexto(token),
+                    stack.pop(), deInfijaAPrefija(expresion)))
         elif category == Type.leftparentheses:
             stack.append(deInfijaAPrefija(expresion))
         elif category == Type.rightparentheses:
@@ -91,6 +99,7 @@ def deInfijaAPrefija(expresion):
 
 def procesaPrefija(lista):
     """recibe la tupla en infija, de manera recursiva la recorre y procesa"""
+    resultado = []
     print lista
     for token in lista:
         if isinstance(token, list) or isinstance(token, tuple):
@@ -100,14 +109,20 @@ def procesaPrefija(lista):
                 for lista[1] in range(2):
                     for lista[2] in range(2):
                         print bool(disyuncion(lista[1], lista[2]))
+                        resultado.append(bool(disyuncion(lista[1], lista[2])))
+                print tipoDeTablaDeVerdad(resultado)
             elif token == "conjuncion":
                 for lista[1] in range(2):
                     for lista[2] in range(2):
                         print bool(conjuncion(lista[1], lista[2]))
+                        resultado.append(bool(conjuncion(lista[1], lista[2])))
+                print tipoDeTablaDeVerdad(resultado)
             elif token == "implicacion":
                 for lista[1] in range(2):
                     for lista[2] in range(2):
                         print bool(implicacion(lista[1], lista[2]))
+                        resultado.append(bool(implicacion(lista[1], lista[2])))
+                print tipoDeTablaDeVerdad(resultado)
 
 
 def main():
