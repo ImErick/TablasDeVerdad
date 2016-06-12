@@ -89,6 +89,17 @@ def deInfijaAPrefija(expresion):
     return stack.pop()
 
 
+def procesaPrefija(tupla):
+    """recibe la tupla en infija, de manera recursiva la recorre y procesa"""
+    for token in tupla:
+        if isinstance(token, tuple):
+            procesaPrefija(token)
+        else:
+            if token == "disyuncion":
+                pass
+
+
+
 def main():
     """main del programa"""
     # expresion que valida que solo acepte numeros y los operadoress
@@ -101,6 +112,7 @@ def main():
     # devuelve la entrada en forma prefija
     prefija = deInfijaAPrefija(list(entrada[::-1]))
     print prefija
+    procesaPrefija(prefija)
 
 
 main()
