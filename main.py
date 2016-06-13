@@ -132,11 +132,15 @@ def main():
     # expresion que valida que tenga parentesis y que cierren
     parentesis = pyparsing.nestedExpr('(', ')', content=contenido)
 
-    entrada = raw_input("ingresa una formula bien formada: ")
-    parentesis.parseString(entrada)  # analizando ando
-    # devuelve la entrada en forma prefija
-    prefija = deInfijaAPrefija(list(entrada[::-1]))
-    procesaPrefija(list(prefija))
+    try:
+        entrada = raw_input("ingresa una formula bien formada: ")
+        parentesis.parseString(entrada)  # analizando ando
+        # devuelve la entrada en forma prefija
+        prefija = deInfijaAPrefija(list(entrada[::-1]))
+        print prefija
+        procesaPrefija(list(prefija))
+    except:
+        print "hubo un error, probablemente se te paso un parentesis"
 
 
 main()
