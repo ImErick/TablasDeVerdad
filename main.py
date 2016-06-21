@@ -1,144 +1,77 @@
 #!/usr/bin/env python
-import pyparsing
-from aenum import Enum
-import sys
+from itertools import product
+import re
 
 
-class Type(Enum):
-    """implementando Enum"""
+def canonica(expr):
+    """Descripcion
 
-    leftparentheses = 0
-    rightparentheses = 1
-    operator = 2
-    empty = 3
-    operand = 4
-
-OPERADORES = {  # operando disponibles
-    "+": "disyuncion",
-    "&": "conjuncion",
-    ">": "implicacion",
-    "!": "negacion",
-}
-
-
-def negacion(p):
-    """negacion se utiliza con simbolo !"""
-    return not p
-
-
-def conjuncion(p, q):
-    """conjuncion se utiliza con simbolo &"""
-    return (p and q)
+    recibe la expresion booleana y hace la sustitucion de las variables y de
+    los parentesis para poder manejarla mas facil, sustituyendo los OPERADORES
+    ingresados por el usuario por operadores validos para hacer la operacion
+    """
+    OPERADORES = {
+        '!': ' not ',   # negacion
+        '+': ' or ',    # disyuncion
+        '&': ' and ',   # conjuncion
+        '>': '>',       # implicacion
+        '[': '(',
+        ']': ')',
+        '{': '(',
+        '}': ')',
+    }
+    return re.sub('|'.join(re.escape(sym) for sym in OPERADORES.keys()),
+                  lambda sym: OPERADORES[sym.group(0)],
+                  expr).strip()
 
 
-def disyuncion(p, q):
-    """disyuncion se utiliza con simbolo +"""
-    return (p or q)
+def validaResultado(lista):
+    """Descripcion
 
-
-def implicacion(p, q):
-    """condicional se utiliza con simbolo >: ->"""
-    if (p == 1 and q == 0):
-        return 0
-    else:
-        return 1
-
-
-def tipoDeTablaDeVerdad(booleano):
-    """define que tipo de proposicion logica es de acuerdo al resultado"""
-    if all(item is True for item in booleano):
+    Recibe una lista y valida si es tautologia, contradiccion o contingencia
+    """
+    if all(item is True for item in lista):
         print "es tautologia"
-    elif all(item is False for item in booleano):
+    elif all(item is False for item in lista):
         print "es contradiccion"
     else:
         print "es contingencia"
 
 
-def operadorATexto(string):
-    """validando"""
-    if string not in OPERADORES:
-        sys.exit("Operador desconocido: " + string)
-    return OPERADORES[string]
+def extrae_variables(expr):
+    """Descripcion.
+
+    recibe una expresion booleana y devuelve una lista con las varibles
+    que se estan usando en la funcion, se valida usando una expresion regular
+    donde solo acepta las letras del abecedario en mayusculas o minusculas
+    """
+    return sorted(set(re.findall(r'\b[A-Za-z]\b', expr)))
 
 
-def tipoDeDato(string):
-    """tipo de dato"""
-    if string == '(':
-        return Type.leftparentheses
-    elif string == ')':
-        return Type.rightparentheses
-    elif string in OPERADORES:
-        return Type.operator
-    elif string == ' ':
-        return Type.empty
-    else:
-        return Type.operand
+def tablaDeVerdad(expr):
+    """recibe una expresion regular y crea la tabla"""
+    expr = canonica(expr)
+    vars = extrae_variables(expr)
+    lista = []
 
+    # header de la tabla
+    print('\t'.join(vars + [expr]))
 
-def deInfijaAPrefija(expresion):
-    """analiza la entrada que hizo el usuario, es un string"""
-    stack = []
-    while expresion:
-        token = expresion.pop()
-        category = tipoDeDato(token)
+    # cuerpo de la tabla
+    for vals in product(range(2), repeat=len(vars)):
+        locals = dict(zip(vars, vals))
+        result = eval(expr, locals)
+        lista.append(result)
+        print('\t'.join([str(v) for v in vals] + [str(result)]))
 
-        if category == Type.operand:
-            stack.append(token)
-        elif category == Type.operator:
-            stack.append(
-                (operadorATexto(token),
-                    stack.pop(), deInfijaAPrefija(expresion)))
-        elif category == Type.leftparentheses:
-            stack.append(deInfijaAPrefija(expresion))
-        elif category == Type.rightparentheses:
-            return stack.pop()
-        elif category == Type.empty:
-            continue
-    return stack.pop()
-
-
-def procesaPrefija(lista):
-    """recibe la tupla en infija, de manera recursiva la recorre y procesa"""
-    resultado = []
-    print lista
-    for token in lista:
-        if isinstance(token, list) or isinstance(token, tuple):
-            procesaPrefija(list(token))
-        else:
-            if token == "disyuncion":
-                for lista[1] in range(2):
-                    for lista[2] in range(2):
-                        print bool(disyuncion(lista[1], lista[2]))
-                        resultado.append(bool(disyuncion(lista[1], lista[2])))
-                print tipoDeTablaDeVerdad(resultado)
-            elif token == "conjuncion":
-                for lista[1] in range(2):
-                    for lista[2] in range(2):
-                        print bool(conjuncion(lista[1], lista[2]))
-                        resultado.append(bool(conjuncion(lista[1], lista[2])))
-                print tipoDeTablaDeVerdad(resultado)
-            elif token == "implicacion":
-                for lista[1] in range(2):
-                    for lista[2] in range(2):
-                        print bool(implicacion(lista[1], lista[2]))
-                        resultado.append(bool(implicacion(lista[1], lista[2])))
-                print tipoDeTablaDeVerdad(resultado)
+    validaResultado(lista)
 
 
 def main():
-    """main del programa"""
-    # expresion que valida que solo acepte numeros y los operadoress
-    contenido = (pyparsing.Word(pyparsing.alphas) | '&' | '!' | '>' | '+')
-    # expresion que valida que tenga parentesis y que cierren
-    parentesis = pyparsing.nestedExpr('(', ')', content=contenido)
-
+    """funcion principal"""
     try:
-        entrada = raw_input("ingresa una formula bien formada: ")
-        parentesis.parseString(entrada)  # analizando ando
-        # devuelve la entrada en forma prefija
-        prefija = deInfijaAPrefija(list(entrada[::-1]))
-        print prefija
-        procesaPrefija(list(prefija))
+        expresion = raw_input("ingresa una expresion valida: ")
+        tablaDeVerdad(expresion)
     except:
         print "hubo un error, probablemente se te paso un parentesis"
 
