@@ -1,2 +1,0 @@
-pyparsing==2.1.4
-aenum==1.4.5
