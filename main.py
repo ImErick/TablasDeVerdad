@@ -15,6 +15,7 @@ def canonica(expr):
         '+': ' or ',    # disyuncion
         '&': ' and ',   # conjuncion
         '>': '>',       # implicacion
+        '==': '==',     # doble implicacion
         '[': '(',
         ']': ')',
         '{': '(',
@@ -60,6 +61,10 @@ def tablaDeVerdad(expr):
     # cuerpo de la tabla
     for vals in product(range(2), repeat=len(vars)):
         locals = dict(zip(vars, vals))
+        # if '>' in expr:
+        #     result = not(eval(expr, locals))
+        # else:
+        #     result = eval(expr, locals)
         result = eval(expr, locals)
         lista.append(result)
         print('\t'.join([str(v) for v in vals] + [str(result)]))
