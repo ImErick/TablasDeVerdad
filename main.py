@@ -14,7 +14,7 @@ def canonica(expr):
         '!': ' not ',   # negacion
         '+': ' or ',    # disyuncion
         '&': ' and ',   # conjuncion
-        '<=': '<=',       # implicacion
+        '<=': '<=',     # implicacion
         '==': '==',     # doble implicacion
         '[': '(',
         ']': ')',
@@ -31,9 +31,9 @@ def validaResultado(lista):
 
     Recibe una lista y valida si es tautologia, contradiccion o contingencia
     """
-    if all(item is True for item in lista):
+    if all(item == 1 for item in lista):
         print "es tautologia"
-    elif all(item is False for item in lista):
+    elif all(item == 0 for item in lista):
         print "es contradiccion"
     else:
         print "es contingencia"
@@ -63,8 +63,10 @@ def tablaDeVerdad(expr):
         locals = dict(zip(vars, vals))
         result = eval(expr, locals)
         lista.append(result)
-        print('\t'.join([str(v) for v in vals] + [str(result)]))
-
+        print('\t'.join([str(v) for v in vals] +
+                        [str(result).replace("True", "1")
+                        if str(result) is "True"
+                        else str(result).replace("False", "0")]))
     validaResultado(lista)
 
 
