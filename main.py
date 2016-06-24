@@ -68,6 +68,7 @@ def tablaDeVerdad(expr):
                         if str(result) is "True"
                         else str(result).replace("False", "0")]))
     validaResultado(lista)
+    return lista
 
 
 def main():
@@ -77,5 +78,4 @@ def main():
         tablaDeVerdad(expresion)
     except:
         print "hubo un error, probablemente se te paso un parentesis"
-
 main()
