@@ -14,8 +14,8 @@ def canonica(expr):
         '!': ' not ',   # negacion
         '+': ' or ',    # disyuncion
         '&': ' and ',   # conjuncion
-        '<=': '<=',     # implicacion
-        '==': '==',     # doble implicacion
+        '-': '<=',      # implicacion
+        '=': '==',      # doble implicacion
         '[': '(',
         ']': ')',
         '{': '(',
@@ -77,6 +77,5 @@ def main():
         tablaDeVerdad(expresion)
     except:
         print "hubo un error, probablemente se te paso un parentesis"
-
 
 main()
